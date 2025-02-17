@@ -8,18 +8,17 @@ import (
 	"github.com/pulse227/server-recruit-challenge-sample/repository"
 )
 
-func NewSingerRepository(db *sql.DB) *singerRepository {
-	return &singerRepository{
-		db: db,
-	}
-}
-
 type singerRepository struct {
 	db *sql.DB
 }
 
 var _ repository.SingerRepository = (*singerRepository)(nil)
 
+func NewSingerRepository(db *sql.DB) repository.SingerRepository {
+	return &singerRepository{
+		db: db,
+	}
+}
 func (r *singerRepository) GetAll(ctx context.Context) ([]*model.Singer, error) {
 	singers := []*model.Singer{}
 	query := "SELECT id, name FROM singers ORDER BY id ASC"
