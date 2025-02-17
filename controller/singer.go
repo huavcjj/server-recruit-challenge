@@ -2,12 +2,14 @@ package controller
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
+	"github.com/go-sql-driver/mysql"
+	"github.com/pulse227/server-recruit-challenge-sample/dto"
 	"log/slog"
 	"net/http"
 	"strconv"
 
-	"github.com/pulse227/server-recruit-challenge-sample/model"
 	"github.com/pulse227/server-recruit-challenge-sample/service"
 )
 
@@ -38,7 +40,8 @@ func (c *singerController) GetSingerListHandler(w http.ResponseWriter, r *http.R
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	if err = json.NewEncoder(w).Encode(singers); err != nil {
+	res := dto.NewSingersResponse(singers)
+	if err = json.NewEncoder(w).Encode(res); err != nil {
 		slog.ErrorContext(r.Context(), "failed to encode response", "error", err)
 		return
 	}
@@ -46,15 +49,15 @@ func (c *singerController) GetSingerListHandler(w http.ResponseWriter, r *http.R
 
 // GetSingerDetailHandler GET /singers/{id}
 func (c *singerController) GetSingerDetailHandler(w http.ResponseWriter, r *http.Request) {
-	idString := r.PathValue("id")
-	singerID, err := strconv.Atoi(idString)
+	ID, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
 		err = fmt.Errorf("invalid path param: %w", err)
 		errorHandler(w, r, http.StatusBadRequest, err.Error())
 		return
 	}
-
-	singer, err := c.service.GetSingerService(r.Context(), model.SingerID(singerID))
+	req := dto.GetSingerRequest{ID: ID}
+	albumID := req.ToModel()
+	singer, err := c.service.GetSingerService(r.Context(), *albumID)
 	if err != nil {
 		errorHandler(w, r, http.StatusInternalServerError, err.Error())
 		return
@@ -62,7 +65,8 @@ func (c *singerController) GetSingerDetailHandler(w http.ResponseWriter, r *http
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	if err = json.NewEncoder(w).Encode(singer); err != nil {
+	res := dto.NewSingerResponse(singer)
+	if err = json.NewEncoder(w).Encode(res); err != nil {
 		slog.ErrorContext(r.Context(), "failed to encode response", "error", err)
 		return
 	}
@@ -70,13 +74,13 @@ func (c *singerController) GetSingerDetailHandler(w http.ResponseWriter, r *http
 
 // PostSingerHandler POST /singers
 func (c *singerController) PostSingerHandler(w http.ResponseWriter, r *http.Request) {
-	var singer *model.Singer
-	if err := json.NewDecoder(r.Body).Decode(&singer); err != nil {
+	req := dto.CreateSingerRequest{}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		err = fmt.Errorf("invalid body param: %w", err)
 		errorHandler(w, r, http.StatusBadRequest, err.Error())
 		return
 	}
-
+	singer := req.ToModel()
 	if err := c.service.PostSingerService(r.Context(), singer); err != nil {
 		errorHandler(w, r, http.StatusInternalServerError, err.Error())
 		return
@@ -84,7 +88,8 @@ func (c *singerController) PostSingerHandler(w http.ResponseWriter, r *http.Requ
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	if err := json.NewEncoder(w).Encode(singer); err != nil {
+	res := dto.NewSingerResponse(singer)
+	if err := json.NewEncoder(w).Encode(res); err != nil {
 		slog.ErrorContext(r.Context(), "failed to encode response", "error", err)
 		return
 	}
@@ -92,15 +97,21 @@ func (c *singerController) PostSingerHandler(w http.ResponseWriter, r *http.Requ
 
 // DeleteSingerHandler DELETE /singers/{id}
 func (c *singerController) DeleteSingerHandler(w http.ResponseWriter, r *http.Request) {
-	idString := r.PathValue("id")
-	singerID, err := strconv.Atoi(idString)
+	ID, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
 		err = fmt.Errorf("invalid path param: %w", err)
 		errorHandler(w, r, http.StatusBadRequest, err.Error())
 		return
 	}
-
-	if err := c.service.DeleteSingerService(r.Context(), model.SingerID(singerID)); err != nil {
+	req := dto.DeleteSingerRequest{ID: ID}
+	singerID := req.ToModel()
+	if err = c.service.DeleteSingerService(r.Context(), *singerID); err != nil {
+		var mysqlErr *mysql.MySQLError
+		if errors.As(err, &mysqlErr) && mysqlErr.Number == 1451 {
+			err = fmt.Errorf("cannot delete singer: related albums exist: %w", err)
+			errorHandler(w, r, http.StatusConflict, err.Error())
+			return
+		}
 		errorHandler(w, r, http.StatusInternalServerError, err.Error())
 		return
 	}

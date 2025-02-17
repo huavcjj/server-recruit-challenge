@@ -6,6 +6,7 @@ type Album struct {
 	ID       AlbumID  `json:"id"`
 	Title    string   `json:"title"`
 	SingerID SingerID `json:"singer_id"`
+	Singer   *Singer  `json:"singer"`
 }
 
 func (a *Album) Validate() error {
