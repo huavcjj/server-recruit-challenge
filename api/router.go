@@ -16,8 +16,7 @@ func NewRouter(
 	if err != nil {
 		return nil, err
 	}
-	// 接続確認
-	if err := dbClient.Ping(); err != nil {
+	if err = dbClient.Ping(); err != nil {
 		return nil, err
 	}
 

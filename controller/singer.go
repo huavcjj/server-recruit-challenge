@@ -100,7 +100,7 @@ func (c *singerController) DeleteSingerHandler(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	if err := c.service.DeleteSingerService(r.Context(), model.SingerID(singerID)); err != nil {
+	if err = c.service.DeleteSingerService(r.Context(), model.SingerID(singerID)); err != nil {
 		errorHandler(w, r, http.StatusInternalServerError, err.Error())
 		return
 	}

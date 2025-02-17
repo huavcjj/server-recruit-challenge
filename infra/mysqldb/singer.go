@@ -3,6 +3,7 @@ package mysqldb
 import (
 	"context"
 	"database/sql"
+	"log/slog"
 
 	"github.com/pulse227/server-recruit-challenge-sample/model"
 	"github.com/pulse227/server-recruit-challenge-sample/repository"
@@ -20,16 +21,20 @@ func NewSingerRepository(db *sql.DB) repository.SingerRepository {
 	}
 }
 func (r *singerRepository) GetAll(ctx context.Context) ([]*model.Singer, error) {
-	singers := []*model.Singer{}
+	var singers []*model.Singer
 	query := "SELECT id, name FROM singers ORDER BY id ASC"
 	rows, err := r.db.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		if err = rows.Close(); err != nil {
+			slog.Error("failed to close rows", "error", err)
+		}
+	}()
 	for rows.Next() {
 		singer := &model.Singer{}
-		if err := rows.Scan(&singer.ID, &singer.Name); err != nil {
+		if err = rows.Scan(&singer.ID, &singer.Name); err != nil {
 			return nil, err
 		}
 		if singer.ID != 0 {
@@ -50,9 +55,13 @@ func (r *singerRepository) Get(ctx context.Context, id model.SingerID) (*model.S
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		if err = rows.Close(); err != nil {
+			slog.Error("failed to close rows", "error", err)
+		}
+	}()
 	for rows.Next() {
-		if err := rows.Scan(&singer.ID, &singer.Name); err != nil {
+		if err = rows.Scan(&singer.ID, &singer.Name); err != nil {
 			return nil, err
 		}
 	}

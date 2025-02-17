@@ -33,11 +33,14 @@ func main() {
 		Addr:    ":8888",
 		Handler: r,
 	}
+
 	go func() {
 		<-ctx.Done()
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
-		server.Shutdown(ctx)
+		if err = server.Shutdown(shutdownCtx); err != nil {
+			slog.Error("server shutdown error", "error", err)
+		}
 	}()
 	slog.Info("server start running at :8888")
 	log.Fatal(server.ListenAndServe())
