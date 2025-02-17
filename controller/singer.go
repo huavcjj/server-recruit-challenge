@@ -3,6 +3,7 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"strconv"
 
@@ -31,12 +32,16 @@ func NewSingerController(s service.SingerService) SingerController {
 func (c *singerController) GetSingerListHandler(w http.ResponseWriter, r *http.Request) {
 	singers, err := c.service.GetSingerListService(r.Context())
 	if err != nil {
-		errorHandler(w, r, 500, err.Error())
+		errorHandler(w, r, http.StatusInternalServerError, err.Error())
 		return
 	}
+
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(200)
-	json.NewEncoder(w).Encode(singers)
+	w.WriteHeader(http.StatusOK)
+	if err = json.NewEncoder(w).Encode(singers); err != nil {
+		slog.ErrorContext(r.Context(), "failed to encode response", "error", err)
+		return
+	}
 }
 
 // GetSingerDetailHandler GET /singers/{id}
@@ -45,18 +50,22 @@ func (c *singerController) GetSingerDetailHandler(w http.ResponseWriter, r *http
 	singerID, err := strconv.Atoi(idString)
 	if err != nil {
 		err = fmt.Errorf("invalid path param: %w", err)
-		errorHandler(w, r, 400, err.Error())
+		errorHandler(w, r, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	singer, err := c.service.GetSingerService(r.Context(), model.SingerID(singerID))
 	if err != nil {
-		errorHandler(w, r, 500, err.Error())
+		errorHandler(w, r, http.StatusInternalServerError, err.Error())
 		return
 	}
+
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(200)
-	json.NewEncoder(w).Encode(singer)
+	w.WriteHeader(http.StatusOK)
+	if err = json.NewEncoder(w).Encode(singer); err != nil {
+		slog.ErrorContext(r.Context(), "failed to encode response", "error", err)
+		return
+	}
 }
 
 // PostSingerHandler POST /singers
@@ -64,18 +73,21 @@ func (c *singerController) PostSingerHandler(w http.ResponseWriter, r *http.Requ
 	var singer *model.Singer
 	if err := json.NewDecoder(r.Body).Decode(&singer); err != nil {
 		err = fmt.Errorf("invalid body param: %w", err)
-		errorHandler(w, r, 400, err.Error())
+		errorHandler(w, r, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	if err := c.service.PostSingerService(r.Context(), singer); err != nil {
-		errorHandler(w, r, 500, err.Error())
+		errorHandler(w, r, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(200)
-	json.NewEncoder(w).Encode(singer)
+	w.WriteHeader(http.StatusCreated)
+	if err := json.NewEncoder(w).Encode(singer); err != nil {
+		slog.ErrorContext(r.Context(), "failed to encode response", "error", err)
+		return
+	}
 }
 
 // DeleteSingerHandler DELETE /singers/{id}
@@ -84,13 +96,13 @@ func (c *singerController) DeleteSingerHandler(w http.ResponseWriter, r *http.Re
 	singerID, err := strconv.Atoi(idString)
 	if err != nil {
 		err = fmt.Errorf("invalid path param: %w", err)
-		errorHandler(w, r, 400, err.Error())
+		errorHandler(w, r, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	if err := c.service.DeleteSingerService(r.Context(), model.SingerID(singerID)); err != nil {
-		errorHandler(w, r, 500, err.Error())
+		errorHandler(w, r, http.StatusInternalServerError, err.Error())
 		return
 	}
-	w.WriteHeader(204)
+	w.WriteHeader(http.StatusNoContent)
 }
