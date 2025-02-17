@@ -20,7 +20,7 @@ type singerService struct {
 
 var _ SingerService = (*singerService)(nil)
 
-func NewSingerService(singerRepository repository.SingerRepository) *singerService {
+func NewSingerService(singerRepository repository.SingerRepository) SingerService {
 	return &singerService{singerRepository: singerRepository}
 }
 
