@@ -1,0 +1,42 @@
+### 歌手の一覧を取得する
+GET http://localhost:8888/singers
+Accept: application/json
+
+### 指定したIDの歌手を取得する
+GET http://localhost:8888/singers/1
+Accept: application/json
+
+### 歌手を追加する
+POST http://localhost:8888/singers
+Content-Type: application/json
+
+{
+  "id": 10,
+  "name": "John"
+}
+
+### 歌手を削除する
+DELETE http://localhost:8888/singers/10
+
+
+### アルバムの一覧を取得する
+GET http://localhost:8888/albums
+Accept: application/json
+
+### 指定したIDのアルバムを取得する
+GET http://localhost:8888/albums/1
+Accept: application/json
+
+### アルバムを追加する
+POST http://localhost:8888/albums
+Content-Type: application/json
+
+{
+  "id": 10,
+  "title": "Chris 1st",
+  "singer_id": 3
+}
+
+### アルバムを削除する
+DELETE http://localhost:8888/albums/10
+
