@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/pulse227/server-recruit-challenge-sample/repository"
 	"net/http"
 
 	"github.com/pulse227/server-recruit-challenge-sample/api/middleware"
@@ -21,11 +22,11 @@ func NewRouter(
 		return nil, err
 	}
 
-	singerRepo := mysqldb.NewSingerRepository(dbClient)
+	singerRepo := repository.NewSingerRepository(dbClient)
 	singerService := service.NewSingerService(singerRepo)
 	singerController := controller.NewSingerController(singerService)
 
-	albumRepo := mysqldb.NewAlbumRepository(dbClient)
+	albumRepo := repository.NewAlbumRepository(dbClient)
 	albumService := service.NewAlbumService(albumRepo)
 	albumController := controller.NewAlbumController(albumService)
 
