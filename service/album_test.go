@@ -33,11 +33,17 @@ func (m *MockAlbumRepository) Get(ctx context.Context, id model.AlbumID) (*model
 }
 func (m *MockAlbumRepository) Add(ctx context.Context, album *model.Album) error {
 	args := m.Called(ctx, album)
-	return args.Error(0)
+	if err, ok := args.Get(0).(error); ok {
+		return err
+	}
+	return nil
 }
 func (m *MockAlbumRepository) Delete(ctx context.Context, id model.AlbumID) error {
 	args := m.Called(ctx, id)
-	return args.Error(0)
+	if err, ok := args.Get(0).(error); ok {
+		return err
+	}
+	return nil
 }
 
 type AlbumServiceSuite struct {

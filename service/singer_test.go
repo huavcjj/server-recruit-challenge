@@ -33,11 +33,17 @@ func (m *MockSingerRepository) Get(ctx context.Context, id model.SingerID) (*mod
 }
 func (m *MockSingerRepository) Add(ctx context.Context, singer *model.Singer) error {
 	args := m.Called(ctx, singer)
-	return args.Error(0)
+	if err, ok := args.Get(0).(error); ok {
+		return err
+	}
+	return nil
 }
 func (m *MockSingerRepository) Delete(ctx context.Context, id model.SingerID) error {
 	args := m.Called(ctx, id)
-	return args.Error(0)
+	if err, ok := args.Get(0).(error); ok {
+		return err
+	}
+	return nil
 }
 
 type SingerServiceSuite struct {
