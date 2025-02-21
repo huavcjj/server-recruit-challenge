@@ -162,7 +162,7 @@ func (suite *AlbumRepositorySuite) TestAlbumRepositoryDelete() {
 
 	mock.ExpectExec("DELETE FROM albums WHERE id = ?").
 		WithArgs(albumID).
-		WillReturnResult(sqlmock.NewResult(0, 1)) // ✅ 1行が削除されたことを模擬
+		WillReturnResult(sqlmock.NewResult(0, 1))
 
 	err := suite.albumRepository.Delete(ctx, albumID)
 	suite.NoError(err)
