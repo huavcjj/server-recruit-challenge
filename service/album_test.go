@@ -83,8 +83,9 @@ func (suite *AlbumServiceSuite) TestAlbumServiceGetAlbumListService() {
 
 	result, err := suite.albumService.GetAlbumListService(ctx)
 
-	suite.Assert().Nil(err)
+	suite.Require().Nil(err)
 	suite.Assert().Equal(albums, result)
+
 	suite.mockAlbumRepository.AssertExpectations(suite.T())
 }
 
@@ -102,8 +103,9 @@ func (suite *AlbumServiceSuite) TestAlbumServiceGetAlbumService() {
 
 	result, err := suite.albumService.GetAlbumService(ctx, album.ID)
 
-	suite.Assert().Nil(err)
+	suite.Require().Nil(err)
 	suite.Assert().Equal(album, result)
+
 	suite.mockAlbumRepository.AssertExpectations(suite.T())
 }
 
@@ -121,7 +123,8 @@ func (suite *AlbumServiceSuite) TestAlbumServicePostAlbumService() {
 
 	err := suite.albumService.PostAlbumService(ctx, album)
 
-	suite.Assert().Nil(err)
+	suite.Require().Nil(err)
+
 	suite.mockAlbumRepository.AssertExpectations(suite.T())
 }
 
@@ -133,6 +136,7 @@ func (suite *AlbumServiceSuite) TestAlbumServiceDeleteAlbumService() {
 
 	err := suite.albumService.DeleteAlbumService(ctx, id)
 
-	suite.Assert().Nil(err)
+	suite.Require().Nil(err)
+
 	suite.mockAlbumRepository.AssertExpectations(suite.T())
 }

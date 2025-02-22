@@ -24,35 +24,20 @@ func NewAlbumService(albumRepository repository.AlbumRepository) AlbumService {
 }
 
 func (s *albumService) GetAlbumListService(ctx context.Context) ([]*model.Album, error) {
-	albums, err := s.albumRepository.GetAll(ctx)
-	if err != nil {
-		return nil, err
-	}
-	return albums, nil
+	return s.albumRepository.GetAll(ctx)
 }
 
 func (s *albumService) GetAlbumService(ctx context.Context, albumID model.AlbumID) (*model.Album, error) {
-	album, err := s.albumRepository.Get(ctx, albumID)
-	if err != nil {
-		return nil, err
-	}
-	return album, nil
+	return s.albumRepository.Get(ctx, albumID)
 }
 
 func (s *albumService) PostAlbumService(ctx context.Context, album *model.Album) error {
 	if err := album.Validate(); err != nil {
 		return err
 	}
-
-	if err := s.albumRepository.Add(ctx, album); err != nil {
-		return err
-	}
-	return nil
+	return s.albumRepository.Add(ctx, album)
 }
 
 func (s *albumService) DeleteAlbumService(ctx context.Context, albumID model.AlbumID) error {
-	if err := s.albumRepository.Delete(ctx, albumID); err != nil {
-		return err
-	}
-	return nil
+	return s.albumRepository.Delete(ctx, albumID)
 }

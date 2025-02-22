@@ -69,7 +69,7 @@ func (suite *SingerControllerSuite) SetupTest() {
 	suite.singerController = controller.NewSingerController(suite.mockSingerService)
 }
 
-func (suite *SingerControllerSuite) TestGetSingerListHandler() {
+func (suite *SingerControllerSuite) TestGetSingerListHandlerSuccess() {
 	req := httptest.NewRequest(http.MethodGet, "/singers", nil)
 	rr := httptest.NewRecorder()
 
@@ -87,45 +87,47 @@ func (suite *SingerControllerSuite) TestGetSingerListHandler() {
 	suite.mockSingerService.On("GetSingerListService", req.Context()).Return(singers, nil)
 	suite.singerController.GetSingerListHandler(rr, req)
 
-	suite.Equal(http.StatusOK, rr.Code)
+	suite.Require().Equal(http.StatusOK, rr.Code)
 
 	var res []*dto.SingerResponse
 	err := json.NewDecoder(rr.Body).Decode(&res)
-	suite.NoError(err)
+	suite.Require().NoError(err)
+	suite.Require().NotNil(res)
 
-	suite.Len(res, 2)
-	suite.Equal(1, res[0].ID)
-	suite.Equal("Singer 1", res[0].Name)
-	suite.Equal(2, res[1].ID)
-	suite.Equal("Singer 2", res[1].Name)
+	suite.Assert().Len(res, 2)
+	suite.Assert().Equal(1, res[0].ID)
+	suite.Assert().Equal("Singer 1", res[0].Name)
+	suite.Assert().Equal(2, res[1].ID)
+	suite.Assert().Equal("Singer 2", res[1].Name)
 
 	suite.mockSingerService.AssertExpectations(suite.T())
 }
 
-func (suite *SingerControllerSuite) TestGetSingerDetailHandler() {}
+func (suite *SingerControllerSuite) TestGetSingerDetailHandlerSuccess() {}
 
-func (suite *SingerControllerSuite) TestPostSingerHandler() {
+func (suite *SingerControllerSuite) TestPostSingerHandlerSuccess() {
 	body := `{"id":1,"name":"Singer 1"}`
 	req := httptest.NewRequest(http.MethodPost, "/singers", strings.NewReader(body))
 	rr := httptest.NewRecorder()
 
 	var singer dto.CreateSingerRequest
 	err := json.NewDecoder(strings.NewReader(body)).Decode(&singer)
-	suite.NoError(err)
+	suite.Require().NoError(err)
 
 	suite.mockSingerService.On("PostSingerService", req.Context(), singer.ToModel()).Return(nil)
 	suite.singerController.PostSingerHandler(rr, req)
 
-	suite.Equal(http.StatusCreated, rr.Code)
+	suite.Require().Equal(http.StatusCreated, rr.Code)
 
 	var res dto.SingerResponse
 	err = json.NewDecoder(rr.Body).Decode(&res)
-	suite.NoError(err)
+	suite.Require().NoError(err)
+	suite.Require().NotNil(res)
 
-	suite.Equal(1, res.ID)
-	suite.Equal("Singer 1", res.Name)
+	suite.Assert().Equal(1, res.ID)
+	suite.Assert().Equal("Singer 1", res.Name)
 
 	suite.mockSingerService.AssertExpectations(suite.T())
 }
 
-func (suite *SingerControllerSuite) TestDeleteSingerHandler() {}
+func (suite *SingerControllerSuite) TestDeleteSingerHandlerSuccess() {}

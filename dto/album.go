@@ -49,16 +49,16 @@ func (r *DeleteAlbumRequest) ToModel() *model.AlbumID {
 }
 
 type AlbumResponse struct {
-	ID     int            `json:"id"`
-	Title  string         `json:"title"`
-	Singer SingerResponse `json:"singer"`
+	ID     int             `json:"id"`
+	Title  string          `json:"title"`
+	Singer *SingerResponse `json:"singer"`
 }
 
 func NewAlbumResponse(album *model.Album) *AlbumResponse {
 	return &AlbumResponse{
 		ID:    int(album.ID),
 		Title: album.Title,
-		Singer: SingerResponse{
+		Singer: &SingerResponse{
 			ID:   int(album.Singer.ID),
 			Name: album.Singer.Name,
 		},
