@@ -68,7 +68,7 @@ func (suite *AlbumControllerSuite) SetupTest() {
 	suite.albumController = controller.NewAlbumController(suite.mockAlbumService)
 }
 
-func (suite *AlbumControllerSuite) TestGetAlbums_Success() {
+func (suite *AlbumControllerSuite) TestGetAlbumsSuccess() {
 	req := httptest.NewRequest(http.MethodGet, "/albums", nil)
 	rr := httptest.NewRecorder()
 
@@ -94,26 +94,27 @@ func (suite *AlbumControllerSuite) TestGetAlbums_Success() {
 	suite.mockAlbumService.On("GetAlbumListService", req.Context()).Return(albums, nil)
 	suite.albumController.GetAlbums(rr, req)
 
-	suite.Equal(http.StatusOK, rr.Code)
+	suite.Require().Equal(http.StatusOK, rr.Code)
 
 	var res []*dto.AlbumResponse
 	err := json.NewDecoder(rr.Body).Decode(&res)
-	suite.NoError(err)
+	suite.Require().NoError(err)
+	suite.Require().NotNil(res)
 
-	suite.Len(res, 2)
-	suite.Equal(1, res[0].ID)
-	suite.Equal(2, res[1].ID)
-	suite.Equal("Album 1", res[0].Title)
-	suite.Equal("Album 2", res[1].Title)
-	suite.Equal(1, res[0].Singer.ID)
-	suite.Equal(1, res[1].Singer.ID)
-	suite.Equal("Singer 1", res[0].Singer.Name)
-	suite.Equal("Singer 1", res[1].Singer.Name)
+	suite.Assert().Len(res, 2)
+	suite.Assert().Equal(1, res[0].ID)
+	suite.Assert().Equal(2, res[1].ID)
+	suite.Assert().Equal("Album 1", res[0].Title)
+	suite.Assert().Equal("Album 2", res[1].Title)
+	suite.Assert().Equal(1, res[0].Singer.ID)
+	suite.Assert().Equal(1, res[1].Singer.ID)
+	suite.Assert().Equal("Singer 1", res[0].Singer.Name)
+	suite.Assert().Equal("Singer 1", res[1].Singer.Name)
 
 	suite.mockAlbumService.AssertExpectations(suite.T())
 }
 
-func (suite *AlbumControllerSuite) TestGetAlbum_Success() {
+func (suite *AlbumControllerSuite) TestGetAlbumSuccess() {
 	//req := httptest.NewRequest(http.MethodGet, "/albums/1", nil)
 	//rr := httptest.NewRecorder()
 	//
@@ -147,32 +148,33 @@ func (suite *AlbumControllerSuite) TestGetAlbum_Success() {
 	//suite.mockAlbumService.AssertExpectations(suite.T())
 }
 
-func (suite *AlbumControllerSuite) TestCreateAlbum_Success() {
+func (suite *AlbumControllerSuite) TestCreateAlbumSuccess() {
 	body := `{"id":1,"title":"New Album","singer_id":1}`
 	req := httptest.NewRequest(http.MethodPost, "/albums", strings.NewReader(body))
 	rr := httptest.NewRecorder()
 
 	var album dto.CreateAlbumRequest
 	err := json.NewDecoder(strings.NewReader(body)).Decode(&album)
-	suite.NoError(err)
+	suite.Require().NoError(err)
 
 	suite.mockAlbumService.On("PostAlbumService", req.Context(), album.ToModel()).Return(nil)
 	suite.albumController.CreateAlbum(rr, req)
 
-	suite.Equal(http.StatusCreated, rr.Code)
+	suite.Require().Equal(http.StatusCreated, rr.Code)
 
 	var res dto.CreateAlbumResponse
 	err = json.NewDecoder(rr.Body).Decode(&res)
-	suite.NoError(err)
+	suite.Require().NoError(err)
+	suite.Require().NotNil(res)
 
-	suite.Equal(1, res.ID)
-	suite.Equal("New Album", res.Title)
-	suite.Equal(1, res.SingerID)
+	suite.Assert().Equal(1, res.ID)
+	suite.Assert().Equal("New Album", res.Title)
+	suite.Assert().Equal(1, res.SingerID)
 
 	suite.mockAlbumService.AssertExpectations(suite.T())
 }
 
-func (suite *AlbumControllerSuite) TestDeleteAlbum_Success() {
+func (suite *AlbumControllerSuite) TestDeleteAlbumSuccess() {
 	//req := httptest.NewRequest(http.MethodDelete, "/albums/1", nil)
 	//rr := httptest.NewRecorder()
 	//

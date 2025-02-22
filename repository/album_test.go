@@ -55,10 +55,10 @@ func (suite *AlbumRepositorySuite) TestAlbumRepositoryAdd() {
 		WillReturnResult(sqlmock.NewResult(1, 1))
 
 	err := suite.albumRepository.Add(ctx, &album)
-	suite.NoError(err)
+	suite.Require().NoError(err)
 
 	err = mock.ExpectationsWereMet()
-	suite.NoError(err)
+	suite.Require().NoError(err)
 }
 
 func (suite *AlbumRepositorySuite) TestAlbumRepositoryGetAll() {
@@ -105,18 +105,19 @@ func (suite *AlbumRepositorySuite) TestAlbumRepositoryGetAll() {
 	).WillReturnRows(rows)
 
 	result, err := suite.albumRepository.GetAll(ctx)
-	suite.NoError(err)
-	suite.Len(result, len(albums))
+	suite.Require().NoError(err)
+	suite.Require().Len(result, len(albums))
+
 	for i, album := range albums {
-		suite.Equal(album.ID, result[i].ID)
-		suite.Equal(album.Title, result[i].Title)
-		suite.Equal(album.SingerID, result[i].SingerID)
-		suite.Equal(album.Singer.ID, result[i].Singer.ID)
-		suite.Equal(album.Singer.Name, result[i].Singer.Name)
+		suite.Assert().Equal(album.ID, result[i].ID)
+		suite.Assert().Equal(album.Title, result[i].Title)
+		suite.Assert().Equal(album.SingerID, result[i].SingerID)
+		suite.Assert().Equal(album.Singer.ID, result[i].Singer.ID)
+		suite.Assert().Equal(album.Singer.Name, result[i].Singer.Name)
 	}
 
 	err = mock.ExpectationsWereMet()
-	suite.NoError(err)
+	suite.Require().NoError(err)
 }
 
 func (suite *AlbumRepositorySuite) TestAlbumRepositoryGet() {
@@ -141,17 +142,17 @@ func (suite *AlbumRepositorySuite) TestAlbumRepositoryGet() {
 	).WithArgs(album.ID).WillReturnRows(rows)
 
 	result, err := suite.albumRepository.Get(ctx, album.ID)
-	suite.NoError(err)
+	suite.Require().NoError(err)
+	suite.Require().NotNil(result)
 
-	suite.NotNil(result)
-	suite.Equal(album.ID, result.ID)
-	suite.Equal(album.Title, result.Title)
-	suite.Equal(album.SingerID, result.SingerID)
-	suite.Equal(album.Singer.ID, result.Singer.ID)
-	suite.Equal(album.Singer.Name, result.Singer.Name)
+	suite.Assert().Equal(model.AlbumID(1), result.ID)
+	suite.Assert().Equal("First Album", result.Title)
+	suite.Assert().Equal(model.SingerID(1), result.SingerID)
+	suite.Assert().Equal(model.SingerID(1), result.Singer.ID)
+	suite.Assert().Equal("Test Singer", result.Singer.Name)
 
 	err = mock.ExpectationsWereMet()
-	suite.NoError(err)
+	suite.Require().NoError(err)
 }
 
 func (suite *AlbumRepositorySuite) TestAlbumRepositoryDelete() {
@@ -165,7 +166,7 @@ func (suite *AlbumRepositorySuite) TestAlbumRepositoryDelete() {
 		WillReturnResult(sqlmock.NewResult(0, 1))
 
 	err := suite.albumRepository.Delete(ctx, albumID)
-	suite.NoError(err)
+	suite.Require().NoError(err)
 
 	mock.ExpectQuery(
 		"SELECT a.id, a.title, a.singer_id, s.name FROM albums a JOIN singers s ON a.singer_id = s.id WHERE a.id = ?",
@@ -173,12 +174,11 @@ func (suite *AlbumRepositorySuite) TestAlbumRepositoryDelete() {
 		WillReturnError(sql.ErrNoRows)
 
 	result, err := suite.albumRepository.Get(ctx, albumID)
-
-	suite.Nil(result)
-	suite.Error(err)
-	suite.Equal(repository.ErrorAlbumNotFound, err)
+	suite.Require().Error(err)
+	suite.Require().Nil(result)
+	suite.Require().Equal(repository.ErrorAlbumNotFound, err)
 
 	err = mock.ExpectationsWereMet()
-	suite.NoError(err)
+	suite.Require().NoError(err)
 
 }

@@ -25,19 +25,11 @@ func NewSingerService(singerRepository repository.SingerRepository) SingerServic
 }
 
 func (s *singerService) GetSingerListService(ctx context.Context) ([]*model.Singer, error) {
-	singers, err := s.singerRepository.GetAll(ctx)
-	if err != nil {
-		return nil, err
-	}
-	return singers, nil
+	return s.singerRepository.GetAll(ctx)
 }
 
 func (s *singerService) GetSingerService(ctx context.Context, singerID model.SingerID) (*model.Singer, error) {
-	singer, err := s.singerRepository.Get(ctx, singerID)
-	if err != nil {
-		return nil, err
-	}
-	return singer, nil
+	return s.singerRepository.Get(ctx, singerID)
 }
 
 func (s *singerService) PostSingerService(ctx context.Context, singer *model.Singer) error {
@@ -45,15 +37,9 @@ func (s *singerService) PostSingerService(ctx context.Context, singer *model.Sin
 		return err
 	}
 
-	if err := s.singerRepository.Add(ctx, singer); err != nil {
-		return err
-	}
-	return nil
+	return s.singerRepository.Add(ctx, singer)
 }
 
 func (s *singerService) DeleteSingerService(ctx context.Context, singerID model.SingerID) error {
-	if err := s.singerRepository.Delete(ctx, singerID); err != nil {
-		return err
-	}
-	return nil
+	return s.singerRepository.Delete(ctx, singerID)
 }

@@ -9,6 +9,8 @@ type Album struct {
 	Singer   *Singer  `json:"singer"`
 }
 
+type Albums []*Album
+
 func (a *Album) Validate() error {
 	if a.Title == "" {
 		return ErrInvalidParam

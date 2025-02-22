@@ -71,13 +71,10 @@ func (suite *SingerServiceSuite) TestSingerServiceGetSingerListService() {
 	suite.mockSingerRepository.On("GetAll", ctx).Return(singers, nil)
 
 	result, err := suite.singerService.GetSingerListService(ctx)
-	suite.Assert().Nil(err)
+
+	suite.Require().Nil(err)
 	suite.Assert().Equal(singers, result)
-	suite.Assert().Equal(len(singers), len(result))
-	suite.Assert().Equal(singers[0].ID, result[0].ID)
-	suite.Assert().Equal(singers[0].Name, result[0].Name)
-	suite.Assert().Equal(singers[1].ID, result[1].ID)
-	suite.Assert().Equal(singers[1].Name, result[1].Name)
+
 	suite.mockSingerRepository.AssertExpectations(suite.T())
 }
 
@@ -88,8 +85,10 @@ func (suite *SingerServiceSuite) TestSingerServiceGetSingerService() {
 	suite.mockSingerRepository.On("Get", ctx, singer.ID).Return(singer, nil)
 
 	result, err := suite.singerService.GetSingerService(ctx, singer.ID)
-	suite.Assert().Nil(err)
+
+	suite.Require().Nil(err)
 	suite.Assert().Equal(singer, result)
+
 	suite.mockSingerRepository.AssertExpectations(suite.T())
 }
 
@@ -100,7 +99,9 @@ func (suite *SingerServiceSuite) TestSingerServicePostSingerService() {
 	suite.mockSingerRepository.On("Add", ctx, singer).Return(nil)
 
 	err := suite.singerService.PostSingerService(ctx, singer)
-	suite.Assert().Nil(err)
+
+	suite.Require().Nil(err)
+
 	suite.mockSingerRepository.AssertExpectations(suite.T())
 }
 
@@ -111,6 +112,8 @@ func (suite *SingerServiceSuite) TestSingerServiceDeleteSingerService() {
 	suite.mockSingerRepository.On("Delete", ctx, id).Return(nil)
 
 	err := suite.singerService.DeleteSingerService(ctx, id)
-	suite.Assert().Nil(err)
+
+	suite.Require().Nil(err)
+
 	suite.mockSingerRepository.AssertExpectations(suite.T())
 }

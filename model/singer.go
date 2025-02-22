@@ -7,6 +7,8 @@ type Singer struct {
 	Name string   `json:"name"`
 }
 
+type Singers []*Singer
+
 func (s *Singer) Validate() error {
 	if s.Name == "" {
 		return ErrInvalidParam

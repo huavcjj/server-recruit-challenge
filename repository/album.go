@@ -43,7 +43,7 @@ func (r *albumRepository) GetAll(ctx context.Context) ([]*model.Album, error) {
 		}
 	}()
 
-	albums := make([]*model.Album, 0)
+	albums := model.Albums{}
 	for rows.Next() {
 		album := model.Album{}
 		singer := model.Singer{}

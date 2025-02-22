@@ -38,7 +38,7 @@ func (r *singerRepository) GetAll(ctx context.Context) ([]*model.Singer, error) 
 		}
 	}()
 
-	singers := make([]*model.Singer, 0)
+	singers := model.Singers{}
 	for rows.Next() {
 		singer := model.Singer{}
 		if err = rows.Scan(&singer.ID, &singer.Name); err != nil {

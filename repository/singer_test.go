@@ -54,16 +54,16 @@ func (suite *SingerRepositorySuite) TestSingerRepositoryGetAll() {
 		WillReturnRows(rows)
 
 	result, err := suite.singerRepository.GetAll(ctx)
-	suite.NoError(err)
+	suite.Require().NoError(err)
+	suite.Require().Len(result, len(singers))
 
-	suite.Len(result, len(singers))
 	for i, singer := range singers {
-		suite.Equal(singer.ID, result[i].ID)
-		suite.Equal(singer.Name, result[i].Name)
+		suite.Assert().Equal(singer.ID, result[i].ID)
+		suite.Assert().Equal(singer.Name, result[i].Name)
 	}
 
 	err = mock.ExpectationsWereMet()
-	suite.NoError(err)
+	suite.Require().NoError(err)
 }
 
 func (suite *SingerRepositorySuite) TestSingerRepositoryGet() {
@@ -81,14 +81,14 @@ func (suite *SingerRepositorySuite) TestSingerRepositoryGet() {
 		WillReturnRows(rows)
 
 	result, err := suite.singerRepository.Get(ctx, singer.ID)
-	suite.NoError(err)
+	suite.Require().NoError(err)
+	suite.Require().NotNil(result)
 
-	suite.NotNil(result)
-	suite.Equal(singer.ID, result.ID)
-	suite.Equal(singer.Name, result.Name)
+	suite.Assert().Equal(singer.ID, result.ID)
+	suite.Assert().Equal(singer.Name, result.Name)
 
 	err = mock.ExpectationsWereMet()
-	suite.NoError(err)
+	suite.Require().NoError(err)
 }
 
 func (suite *SingerRepositorySuite) TestSingerRepository_Add() {
@@ -102,10 +102,10 @@ func (suite *SingerRepositorySuite) TestSingerRepository_Add() {
 		WillReturnResult(sqlmock.NewResult(1, 1))
 
 	err := suite.singerRepository.Add(ctx, singer)
-	suite.NoError(err)
+	suite.Require().NoError(err)
 
 	err = mock.ExpectationsWereMet()
-	suite.NoError(err)
+	suite.Require().NoError(err)
 }
 
 func (suite *SingerRepositorySuite) TestSingerRepository_Delete() {
@@ -119,7 +119,7 @@ func (suite *SingerRepositorySuite) TestSingerRepository_Delete() {
 		WillReturnResult(sqlmock.NewResult(0, 1))
 
 	err := suite.singerRepository.Delete(ctx, singerID)
-	suite.NoError(err)
+	suite.Require().NoError(err)
 
 	err = mock.ExpectationsWereMet()
 	suite.NoError(err)
